@@ -1,53 +1,47 @@
-bash-shellshock Cookbook
+Patch Management Cookbook
 =================
 
-This cookbook is designed to test and optionally remediate the bash "shellshock" bug, more formally known as cve-2014-7169.
-
-Once Chef-client has executed this recipe on one or more hosts, a list of all nodes that are vulnerable to the "Shellshock" exploit can be retrieved from the Chef server via `knife search:`
-
-`knife search node 'languages_bash_shellshock_vulnerable'`
+This cookbook is designed to test and optionally remediate vulnerabilities based on detecting package and/or hotfix numbers.
 
 Limitations
 ------------
-This cookbook relies on the OS-native packaging system to provide patched versions of the bash package.
+Hotfixes rolled up into cumulative fixes may not be detected on Windows.
 
 Requirements
 ------------
 
 ### Platform:
 
-* Tested on CentOS 6.5
-* Tested on Ubuntu 12.04
 * Should work on a wide variety of other systems
 
 ### Cookbook Dependencies:
 
-* ohai (https://supermarket.getchef.com/cookbooks/ohai)
+* None
 
 Attributes
 ----------
+Non-Windows
+* default['package-name'] = The name (as listed in the repo) for the package to check (where available)
+* default['package-version'] = The version number (as listed in the repo) for the package to verify
 
-* No user-configurable attributes
+Windows
+* default['hotfix-number'] = The number of the hotfix (as identified by KB0123456) which addresses the vulnerability
 
 Recipes
 -------
 
-### bash-shellshock::default
+### patch-management::default
 
-* Audits and remediates Bash-CVE-2014-7169 ("Shellshock")
+* Detects and remediates systems using native patch management tools
 
-### bash-shellshock::audit
+### patch-management::audit
 
-* Installs an OHAI plugin that will automatically audit nodes for the Shellshock vulnerability. This plugin creates two new values in OHAI:
+* Audits system based on attributes.
 
-  node['languages']['bash']['version'], a string. Returned from `bash --version`.  
-  node['languages']['bash']['shellshock_vulnerable'], a boolean. True if node is vulnerable.
+### patch-management::remediate
 
-### bash-shellshock::remediate
-
-* If the node is marked vulnerable by the audit recipe, this recipe will attempt to upgrade bash via the native packaging system. Includes the audit recipe.
-* Audits and remediates Bash-CVE-2014-7169 ("Shellshock")
-
+* Updates the vulnerable package to the latest version according to the repository associated with the system.
+* 
 Testing
 -------
 
@@ -64,7 +58,7 @@ Author:: Chef Software, Inc (support@getchef.com)
 Author:: Charles Johnson (charles@getchef.com)  
 Author:: Nicolas Rycar (nrycar@getchef.com)  
 Author:: Julian Dunn (jdunn@getchef.com)
-
+Author:: David Aronchick (daronchick@getchef.com)  
 
 Copyright:: 2014, Chef Software, Inc.
 
